@@ -29,9 +29,9 @@ def create_app(root_path: str) -> FastAPI:
         return Document(id="docid", content=req.content)
 
     @app.get("/documents:search", response_model=SearchDocumentsResponse)
-    async def search_documents():
-        doc1 = Document(id="doc1", content="Lorem Ipsum"*100)
-        doc2 = Document(id="doc2", content="Lorem Ipsum"*100)
+    async def search_documents(content: str):
+        doc1 = Document(id="doc1", content=content*10)
+        doc2 = Document(id="doc2", content=content*10)
 
         response = SearchDocumentsResponse(documents=[doc1, doc2])
 
