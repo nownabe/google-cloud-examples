@@ -12,6 +12,7 @@ import {
 import { useState, useCallback, useRef } from "react";
 
 import ErrorSnackbar from "../ErrorSnackbar";
+import ProgressButton from "../ProgressButton";
 
 import { createDocument } from "@/api";
 
@@ -80,27 +81,13 @@ const AddDocumentDialog = ({ open, onClose }: Props) => {
           <Button onClick={onCancelClicked} disabled={loading}>
             Cancel
           </Button>
-          <Box sx={{ m: 1, position: "relative" }}>
-            <Button
-              variant="contained"
-              onClick={onAddClicked}
-              disabled={loading}
-            >
-              Add
-            </Button>
-            {loading && (
-              <CircularProgress
-                size={24}
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  marginTop: "-12px",
-                  marginLeft: "-12px",
-                }}
-              />
-            )}
-          </Box>
+          <ProgressButton
+            variant="contained"
+            onClick={onAddClicked}
+            loading={loading}
+          >
+            Add
+          </ProgressButton>
         </DialogActions>
       </Dialog>
       <ErrorSnackbar
