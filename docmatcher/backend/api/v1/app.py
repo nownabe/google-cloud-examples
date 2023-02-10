@@ -7,8 +7,11 @@ class Document(BaseModel):
     content: str = Field(description="Content")
 
 
+class CreateDocumentRequest(BaseModel):
+    content: str = Field(description="Content")
+
+
 class SearchDocumentsResponse(BaseModel):
-    """Response for /api/v1/documents:search"""
     documents: list[Document]
 
 
@@ -22,8 +25,8 @@ def create_app(root_path: str) -> FastAPI:
     app = FastAPI(root_path=root_path)
 
     @app.post("/documents", response_model=Document)
-    async def create_document(document: Document):
-        return document
+    async def create_document(req: CreateDocumentRequest):
+        return Document(id="docid", content=req.content)
 
     @app.get("/documents:search", response_model=SearchDocumentsResponse)
     async def search_documents():
