@@ -34,13 +34,22 @@ export class DefaultService {
 
     /**
      * Search Documents
+     * @param content
      * @returns SearchDocumentsResponse Successful Response
      * @throws ApiError
      */
-    public static searchDocumentsDocumentsSearchGet(): CancelablePromise<SearchDocumentsResponse> {
+    public static searchDocumentsDocumentsSearchGet(
+        content: string,
+    ): CancelablePromise<SearchDocumentsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
             url: '/documents:search',
+            query: {
+                'content': content,
+            },
+            errors: {
+                422: `Validation Error`,
+            },
         });
     }
 
