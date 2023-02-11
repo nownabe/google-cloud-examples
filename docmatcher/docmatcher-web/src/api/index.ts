@@ -3,18 +3,30 @@ import { DefaultService } from "./client/services/DefaultService";
 
 const prefix = "/api/v1";
 
-type ApiResult<T> =
-  | {
-      ok: true;
-      data: T;
-    }
-  | {
-      ok: false;
+type ApiResultSuccess<T> = { ok: true; data: T };
+type ApiResultError = { ok: false; error: { status: number; detail: string } };
+
+type ApiResult<T> = ApiResultSuccess<T> | ApiResultError;
+
+const handleErrorResponse = (e: any): ApiResultError => {
+  if (e instanceof ApiError) {
+    return {
+      ok: false,
       error: {
-        status: number;
-        detail: string;
-      };
+        status: e.status,
+        detail: e.body.detail,
+      },
     };
+  } else {
+    return {
+      ok: false,
+      error: {
+        status: -1,
+        detail: "unexpected error",
+      },
+    };
+  }
+};
 
 const createDocument = async (
   content: string
@@ -28,25 +40,6 @@ const createDocument = async (
       data: document,
     };
   } catch (e) {
-    if (e instanceof ApiError) {
-      return {
-        ok: false,
-        error: {
-          status: e.status,
-          detail: e.body.detail,
-        },
-      };
-    } else {
-      console.error(e);
-      return {
-        ok: false,
-        error: {
-          status: -1,
-          detail: "unexpected error",
-        },
-      };
-    }
+    return handleErrorResponse(e);
   }
 };
-
-export { createDocument };
