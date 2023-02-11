@@ -43,3 +43,21 @@ const createDocument = async (
     return handleErrorResponse(e);
   }
 };
+
+const searchDocuments = async (
+  content: string
+): Promise<ApiResult<Array<Document>>> => {
+  try {
+    const response = await DefaultService.searchDocumentsDocumentsSearchGet(
+      content
+    );
+    return {
+      ok: true,
+      data: response.documents,
+    };
+  } catch (e) {
+    return handleErrorResponse(e);
+  }
+};
+
+export { createDocument, searchDocuments };
