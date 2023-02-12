@@ -60,7 +60,7 @@ const SearchedDocuments = ({ content, onSearchFinished }: Props) => {
     <>
       <Stack spacing={2}>
         {documents.map((doc, i) => (
-          <SearchedDocument key={i} document={doc} />
+          <SearchedDocument key={i} document={doc} content={content} />
         ))}
       </Stack>
       <ErrorSnackbar

@@ -60,4 +60,22 @@ const searchDocuments = async (
   }
 };
 
-export { createDocument, searchDocuments };
+const createFeedback = async (
+  content: string,
+  documentId: string,
+  score: number
+): Promise<ApiResult<null>> => {
+  try {
+    await DefaultService.createFeedbackFeedbacksPost({
+      content,
+      document_id: documentId,
+      score,
+    });
+    return { ok: true, data: null };
+  } catch (e) {
+    console.error(e);
+    return handleErrorResponse(e);
+  }
+};
+
+export { createDocument, searchDocuments, createFeedback };

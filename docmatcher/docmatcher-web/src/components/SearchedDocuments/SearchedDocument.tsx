@@ -1,4 +1,9 @@
-import { ThumbDownOutlined, ThumbUpOutlined } from "@mui/icons-material";
+import {
+  ThumbDown,
+  ThumbDownOutlined,
+  ThumbUp,
+  ThumbUpOutlined,
+} from "@mui/icons-material";
 import {
   Card,
   CardActions,
@@ -8,13 +13,16 @@ import {
   Typography,
 } from "@mui/material";
 
+import FeedbackButton from "./FeedbackButton";
+
 import { Document } from "@/api/client";
 
 interface Props {
+  content: string;
   document: Document;
 }
 
-const SearchedDocument = ({ document }: Props) => {
+const SearchedDocument = ({ content, document }: Props) => {
   return (
     <Card>
       <CardContent>
@@ -24,16 +32,26 @@ const SearchedDocument = ({ document }: Props) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Tooltip title="You think it's similar">
-          <IconButton aira-label="like">
-            <ThumbUpOutlined />
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="You don't think it's similar">
-          <IconButton aira-label="dislike">
-            <ThumbDownOutlined />
-          </IconButton>
-        </Tooltip>
+        <FeedbackButton
+          defaultIcon={<ThumbUpOutlined />}
+          pressedIcon={<ThumbUp />}
+          pressedColor="primary"
+          label="like"
+          tooltip="You think it's similar"
+          content={content}
+          documentId={document.id}
+          score={1.0}
+        />
+        <FeedbackButton
+          defaultIcon={<ThumbDownOutlined />}
+          pressedIcon={<ThumbDown />}
+          pressedColor="error"
+          label="like"
+          tooltip="You think it's similar"
+          content={content}
+          documentId={document.id}
+          score={1.0}
+        />
       </CardActions>
     </Card>
   );
