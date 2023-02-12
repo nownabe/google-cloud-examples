@@ -15,8 +15,8 @@ class SearchDocumentsResponse(BaseModel):
     documents: list[Document]
 
 
-class Evaluation(BaseModel):
-    text: str = Field(description="Text to search")
+class Feedback(BaseModel):
+    content: str = Field(description="Content to search")
     document_id: str = Field(description="Searched document ID")
     score: float = Field(description="Score on a search result")
 
@@ -37,8 +37,8 @@ def create_app(root_path: str) -> FastAPI:
 
         return response
 
-    @app.post("/evaluations", status_code=status.HTTP_204_NO_CONTENT)
-    async def create_evaluation(evaluation: Evaluation):
+    @app.post("/feedbacks", status_code=status.HTTP_204_NO_CONTENT)
+    async def create_feedback(feedback: Feedback):
         return None
 
     return app

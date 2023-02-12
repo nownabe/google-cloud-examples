@@ -3,7 +3,7 @@
 /* eslint-disable */
 import type { CreateDocumentRequest } from '../models/CreateDocumentRequest';
 import type { Document } from '../models/Document';
-import type { Evaluation } from '../models/Evaluation';
+import type { Feedback } from '../models/Feedback';
 import type { SearchDocumentsResponse } from '../models/SearchDocumentsResponse';
 
 import type { CancelablePromise } from '../core/CancelablePromise';
@@ -54,17 +54,17 @@ export class DefaultService {
     }
 
     /**
-     * Create Evaluation
+     * Create Feedback
      * @param requestBody
      * @returns void
      * @throws ApiError
      */
-    public static createEvaluationEvaluationsPost(
-        requestBody: Evaluation,
+    public static createFeedbackFeedbacksPost(
+        requestBody: Feedback,
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/evaluations',
+            url: '/feedbacks',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

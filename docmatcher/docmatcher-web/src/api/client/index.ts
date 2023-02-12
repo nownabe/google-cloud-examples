@@ -8,7 +8,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { CreateDocumentRequest } from './models/CreateDocumentRequest';
 export type { Document } from './models/Document';
-export type { Evaluation } from './models/Evaluation';
+export type { Feedback } from './models/Feedback';
 export type { HTTPValidationError } from './models/HTTPValidationError';
 export type { SearchDocumentsResponse } from './models/SearchDocumentsResponse';
 export type { ValidationError } from './models/ValidationError';

@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-export type Evaluation = {
+export type Feedback = {
     /**
-     * Text to search
+     * Content to search
      */
-    text: string;
+    content: string;
     /**
      * Searched document ID
      */
