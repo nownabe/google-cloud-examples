@@ -12,6 +12,7 @@ uvicorn = {extras = ["standard"], version = "^0.20.0"}
 fastapi = "^0.90.1"
 protobuf = "^4.21.12"
 google-cloud-spanner = "^3.27.1"
+google-cloud-pubsub = "^2.14.1"
 
 
 [build-system]

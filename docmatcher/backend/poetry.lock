@@ -140,6 +140,28 @@ google-auth = ">=1.25.0,<3.0dev"
 grpc = ["grpcio (>=1.38.0,<2.0dev)"]
 
 [[package]]
+name = "google-cloud-pubsub"
+version = "2.14.1"
+description = "Google Cloud Pub/Sub API client library"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+google-api-core = {version = ">=1.34.0,<2.0.0 || >=2.11.0,<3.0.0dev", extras = ["grpc"]}
+grpc-google-iam-v1 = ">=0.12.4,<1.0.0dev"
+grpcio = ">=1.38.1,<2.0dev"
+grpcio-status = ">=1.33.2"
+proto-plus = [
+    {version = ">=1.22.0,<2.0.0dev", markers = "python_version < \"3.11\""},
+    {version = ">=1.22.2,<2.0.0dev", markers = "python_version >= \"3.11\""},
+]
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+
+[package.extras]
+libcst = ["libcst (>=0.3.10)"]
+
+[[package]]
 name = "google-cloud-spanner"
 version = "3.27.1"
 description = "Google Cloud Spanner API client library"
@@ -458,7 +480,7 @@ python-versions = ">=3.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.11"
-content-hash = "a61ec489bedf493dac41e9637f7285c09a93a3e77234a89f823aa8339256d89f"
+content-hash = "b868350a880b98032d9d0d0290cb44a1eef4205136f70a8318ef023b9a71ddbc"
 
 [metadata.files]
 anyio = [
@@ -586,6 +608,10 @@ google-auth = [
 google-cloud-core = [
     {file = "google-cloud-core-2.3.2.tar.gz", hash = "sha256:b9529ee7047fd8d4bf4a2182de619154240df17fbe60ead399078c1ae152af9a"},
     {file = "google_cloud_core-2.3.2-py2.py3-none-any.whl", hash = "sha256:8417acf6466be2fa85123441696c4badda48db314c607cf1e5d543fa8bdc22fe"},
+]
+google-cloud-pubsub = [
+    {file = "google-cloud-pubsub-2.14.1.tar.gz", hash = "sha256:28b3c62021b04f78f9158c157dbfcaebe9ffb504edd2975ad0f228ebf0204c6f"},
+    {file = "google_cloud_pubsub-2.14.1-py2.py3-none-any.whl", hash = "sha256:d73a24ddfa49aaae17959ecb987ff92ee7ba0535dc5dbc10ce22136588ccaa09"},
 ]
 google-cloud-spanner = [
     {file = "google-cloud-spanner-3.27.1.tar.gz", hash = "sha256:d7fa4613c425e7407c858e08fe8e4084f2033ae13711072ba36ccc376df32ec7"},

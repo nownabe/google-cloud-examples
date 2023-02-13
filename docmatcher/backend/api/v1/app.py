@@ -4,10 +4,8 @@ from fastapi import FastAPI, status
 from pydantic import BaseModel, Field
 from google.cloud.spanner_v1.database import Database
 
-
-class Document(BaseModel):
-    id: str = Field(description="Document ID")
-    content: str = Field(description="Content")
+from .models import Document, Feedback
+from .document_event_publisher import DocumentEventPublisher
 
 
 class CreateDocumentRequest(BaseModel):
@@ -18,29 +16,25 @@ class SearchDocumentsResponse(BaseModel):
     documents: list[Document] = Field(description="Searched similar documents")
 
 
-class Feedback(BaseModel):
-    content: str = Field(description="Content to search")
-    document_id: str = Field(description="Searched document ID")
-    score: float = Field(description="Score on a search result")
-
-
-def create_app(root_path: str, spanner_db: Database) -> FastAPI:
+def create_app(root_path: str,
+               spanner_db: Database,
+               document_event_publisher: DocumentEventPublisher) -> FastAPI:
     app = FastAPI(root_path=root_path)
 
     @app.post("/documents", response_model=Document)
     async def create_document(req: CreateDocumentRequest):
-        document_id = str(uuid4())
+        doc = Document(id=str(uuid4()), content=req.content)
 
         with spanner_db.batch() as batch:
             batch.insert(
                 table="Documents",
                 columns=("DocumentId", "Content"),
-                values=[(document_id, req.content)]
+                values=[(doc.id, doc.content)]
             )
 
-        # publish insert event
+        document_event_publisher.publish(doc)
 
-        return Document(id=document_id, content=req.content)
+        return doc
 
     @app.get("/documents:search", response_model=SearchDocumentsResponse)
     async def search_documents(content: str):
