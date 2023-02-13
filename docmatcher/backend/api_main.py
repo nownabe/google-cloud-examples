@@ -1,9 +1,17 @@
+from os import environ
+
+from google.cloud import spanner
+
 from api.app import create_app
 
-app = create_app()
+
+spanner_db = spanner.Client(project=environ["SPANNER_PROJECT_ID"]) \
+                    .instance(environ["SPANNER_INSTANCE_ID"]) \
+                    .database(environ["SPANNER_DATABASE_ID"])
+
+app = create_app(spanner_db=spanner_db)
 
 if __name__ == "__main__":
-    from os import environ
     import uvicorn
 
     port = int(environ.get("PORT", "3001"))

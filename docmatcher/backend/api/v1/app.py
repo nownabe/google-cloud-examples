@@ -1,5 +1,8 @@
+from uuid import uuid4
+
 from fastapi import FastAPI, status
 from pydantic import BaseModel, Field
+from google.cloud.spanner_v1.database import Database
 
 
 class Document(BaseModel):
@@ -12,7 +15,7 @@ class CreateDocumentRequest(BaseModel):
 
 
 class SearchDocumentsResponse(BaseModel):
-    documents: list[Document]
+    documents: list[Document] = Field(description="Searched similar documents")
 
 
 class Feedback(BaseModel):
@@ -21,17 +24,29 @@ class Feedback(BaseModel):
     score: float = Field(description="Score on a search result")
 
 
-def create_app(root_path: str) -> FastAPI:
+def create_app(root_path: str, spanner_db: Database) -> FastAPI:
     app = FastAPI(root_path=root_path)
 
     @app.post("/documents", response_model=Document)
     async def create_document(req: CreateDocumentRequest):
-        return Document(id="docid", content=req.content)
+        document_id = str(uuid4())
+
+        with spanner_db.batch() as batch:
+            batch.insert(
+                table="Documents",
+                columns=("DocumentId", "Content"),
+                values=[(document_id, req.content)]
+            )
+
+        # publish insert event
+
+        return Document(id=document_id, content=req.content)
 
     @app.get("/documents:search", response_model=SearchDocumentsResponse)
     async def search_documents(content: str):
-        doc1 = Document(id="doc1", content=content*10)
-        doc2 = Document(id="doc2", content=content*10)
+        # search
+        doc1 = Document(id="doc1", content=f"{content} "*20)
+        doc2 = Document(id="doc2", content=f"{content[::-1]} "*20)
 
         response = SearchDocumentsResponse(documents=[doc1, doc2])
 
@@ -39,6 +54,7 @@ def create_app(root_path: str) -> FastAPI:
 
     @app.post("/feedbacks", status_code=status.HTTP_204_NO_CONTENT)
     async def create_feedback(feedback: Feedback):
+        # publish feedback event
         return None
 
     return app
