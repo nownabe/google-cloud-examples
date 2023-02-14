@@ -1,9 +1,24 @@
+from abc import ABCMeta, abstractmethod
+from collections.abc import Iterable
+import pickle
+
 import MeCab
 import numpy as np
-from gensim.models.keyedvectors import KeyedVectors
 
 
-class WordExtractor:
+class WordExtractor(metaclass=ABCMeta):
+    @abstractmethod
+    def extract(self, content: str) -> Iterable[str]:
+        pass
+
+
+class Vectorizer(metaclass=ABCMeta):
+    @abstractmethod
+    def vectorize(self, content: str) -> np.ndarray:
+        pass
+
+
+class JapaneseWordExtractor(WordExtractor):
     STOP_POS = (
         "その他",
         "フィラー",
@@ -36,16 +51,14 @@ class WordExtractor:
         "連体詞"
     )
 
-    @classmethod
-    def from_gcs(cls):
-        # TODO
-        return cls(ipadic_path="dummy")
-
     def __init__(self, ipadic_path: str):
+        if ipadic_path.startswith("gs://"):
+            pass
+
         self._mecab = MeCab.Tagger(f"-r mecabrc -d {ipadic_path} -Ochasen")
 
-    def extract(self, sentence: str) -> list[str]:
-        result = self._mecab.parse(sentence).splitlines()[:-1]
+    def extract(self, content: str) -> Iterable[str]:
+        result = self._mecab.parse(content).splitlines()[:-1]
         words = [line.split("\t") for line in result]
         entities = {word[0] for word in words if self._is_valid(word)}
 
@@ -55,15 +68,15 @@ class WordExtractor:
         return not word[3].startswith(self.STOP_POS)
 
 
-class Vectorizer:
-    @classmethod
-    def from_gcs(cls, word_extractor: WordExtractor):
-        # TODO
-        return cls(word_extractor=word_extractor, model=None)
+class Word2Vec(Vectorizer):
+    def __init__(self, word_extractor: WordExtractor, model_path: str):
+        if model_path.startswith("gs://"):
+            pass
+        elif model_path.endswith(".pkl"):
+            with open(model_path, mode="rb") as f:
+                self._model = pickle.load(f)
 
-    def __init__(self, word_extractor: WordExtractor, model: KeyedVectors):
         self._extractor = word_extractor
-        self._model = model
 
     def vectorize(self, sentence: str) -> np.ndarray:
         words = self._extractor.extract(sentence)
