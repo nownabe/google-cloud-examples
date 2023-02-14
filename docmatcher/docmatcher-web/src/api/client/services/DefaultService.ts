@@ -18,12 +18,12 @@ export class DefaultService {
      * @returns Document Successful Response
      * @throws ApiError
      */
-    public static createDocumentDocumentsPost(
+    public static createDocumentApiDocumentsPost(
         requestBody: CreateDocumentRequest,
     ): CancelablePromise<Document> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/documents',
+            url: '/api/documents',
             body: requestBody,
             mediaType: 'application/json',
             errors: {
@@ -38,12 +38,12 @@ export class DefaultService {
      * @returns SearchDocumentsResponse Successful Response
      * @throws ApiError
      */
-    public static searchDocumentsDocumentsSearchGet(
+    public static searchDocumentsApiDocumentsSearchGet(
         content: string,
     ): CancelablePromise<SearchDocumentsResponse> {
         return __request(OpenAPI, {
             method: 'GET',
-            url: '/documents:search',
+            url: '/api/documents:search',
             query: {
                 'content': content,
             },
@@ -59,12 +59,12 @@ export class DefaultService {
      * @returns void
      * @throws ApiError
      */
-    public static createFeedbackFeedbacksPost(
+    public static createFeedbackApiFeedbacksPost(
         requestBody: Feedback,
     ): CancelablePromise<void> {
         return __request(OpenAPI, {
             method: 'POST',
-            url: '/feedbacks',
+            url: '/api/feedbacks',
             body: requestBody,
             mediaType: 'application/json',
             errors: {

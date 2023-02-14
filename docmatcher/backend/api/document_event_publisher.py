@@ -1,7 +1,7 @@
 from google.cloud.pubsub_v1.publisher import Client
 from google.protobuf.json_format import MessageToJson
 
-from gen.docmatcher.v1 import document_event_pb2 as pb
+from gen.docmatcher import document_event_pb2 as pb
 from .models import Document
 
 

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package docmatcher.v1;
+package docmatcher;
 
 message DocumentEvent {
   string document_id = 1;

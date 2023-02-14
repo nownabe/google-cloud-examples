@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "generate-client": "openapi --input http://127.0.0.1:3001/api/v1/openapi.json --output ./src/api/client --client axios"
+    "generate-client": "openapi --input http://127.0.0.1:3001/openapi.json --output ./src/api/client --client axios"
   },
   "dependencies": {
     "@emotion/cache": "^11.10.5",

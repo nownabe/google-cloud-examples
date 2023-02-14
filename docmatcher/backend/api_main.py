@@ -3,7 +3,7 @@ from os import environ
 from google.cloud import spanner
 
 from api.app import create_app
-from api.v1.document_event_publisher import DocumentEventPublisher
+from api.document_event_publisher import DocumentEventPublisher
 
 
 spanner_db = spanner.Client(project=environ["SPANNER_PROJECT_ID"]) \
