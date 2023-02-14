@@ -1,4 +1,5 @@
-from logging import getLogger
+from concurrent import futures
+import logging
 from os import environ, path
 from tempfile import mkdtemp
 import pickle
@@ -6,11 +7,15 @@ import pickle
 from google.cloud import storage
 from gensim.models import KeyedVectors
 
-from vectorupdater.app import create_app
-from vectorupdater.vectorizer import JapaneseWordExtractor, Word2Vec
+import grpc
+
+from gen.docmatcher.vectorizer_pb2_grpc \
+    import add_VectorizerServiceServicer_to_server
+from vectorizer.service import VectorizerService
+from vectorizer.vectorizer import JapaneseWordExtractor, Word2Vec
 
 
-logger = getLogger("uvicorn")
+logger = logging.getLogger("vectorizer")
 
 
 class Loader:
@@ -71,18 +76,33 @@ class Loader:
         return uri[5:].split("/", maxsplit=1)
 
 
-loader = Loader()
-ipadic_path = loader.get_ipadic_path(environ["MECAB_IPADIC"])
-model = loader.get_model(environ["WORD2VEC_MODEL"])
+def main(port: str, max_workers: int, ipadic_path: str, model_path: str):
+    loader = Loader()
+    ipadic_path = loader.get_ipadic_path(ipadic_path)
+    model = loader.get_model(model_path)
 
-extractor = JapaneseWordExtractor(ipadic_path=ipadic_path)
-vectorizer = Word2Vec(word_extractor=extractor, model=model)
+    extractor = JapaneseWordExtractor(ipadic_path=ipadic_path)
+    vectorizer = Word2Vec(word_extractor=extractor, model=model)
 
-app = create_app(vectorizer=vectorizer)
+    service = VectorizerService(vectorizer=vectorizer)
+
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=max_workers))
+    add_VectorizerServiceServicer_to_server(service, server)
+    server.add_insecure_port(f"[::]:{port}")
+    server.start()
+    logger.info("server started listening on %s", port)
+    server.wait_for_termination()
+
 
 if __name__ == "__main__":
-    import uvicorn
+    port = environ.get("PORT", "3003")
+    max_workers = int(environ.get("MAX_WORKERS", "10"))
+    ipadic_path = environ["MECAB_IPADIC"]
+    model_path = environ["WORD2VEC_MODEL"]
 
-    port = int(environ.get("PORT", "3002"))
-    log_level = environ.get("LOG_LEVEL", "info")
-    uvicorn.run(app, host="0.0.0.0", port=port, log_level=log_level)
+    logging.basicConfig(level=logging.INFO)
+
+    main(port=port,
+         max_workers=max_workers,
+         ipadic_path=ipadic_path,
+         model_path=model_path)

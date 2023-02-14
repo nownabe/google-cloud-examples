@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package docmatcher;
+
+service VectorizerService {
+  rpc Vectorize (VectorizeRequest) returns (VectorizeResponse) {}
+}
+
+message VectorizeRequest {
+  string content = 1;
+}
+
+message VectorizeResponse {
+  repeated double vector = 1;
+}

@@ -1,20 +1,19 @@
 from os import environ
 
+import grpc
 from google.cloud import spanner
 
 from api.app import create_app
-from api.document_event_publisher import DocumentEventPublisher
+from gen.docmatcher.vectorizer_pb2_grpc import VectorizerServiceStub
 
 
 spanner_db = spanner.Client(project=environ["SPANNER_PROJECT_ID"]) \
                     .instance(environ["SPANNER_INSTANCE_ID"]) \
                     .database(environ["SPANNER_DATABASE_ID"])
 
-doc_event_publisher = DocumentEventPublisher(environ["PUBSUB_PROJECT_ID"],
-                                             environ["PUBSUB_TOPIC_ID"])
+vectorizer = VectorizerServiceStub(grpc.insecure_channel("localhost:3003"))
 
-app = create_app(spanner_db=spanner_db,
-                 document_event_publisher=doc_event_publisher)
+app = create_app(spanner_db=spanner_db, vectorizer=vectorizer)
 
 
 if __name__ == "__main__":

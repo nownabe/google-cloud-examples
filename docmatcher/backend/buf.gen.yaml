@@ -1,4 +1,7 @@
 version: v1
 plugins:
-  - plugin: python
+  - plugin: buf.build/protocolbuffers/python
     out: gen/
+  - plugin: buf.build/grpc/python
+    out: gen/
+    opt: paths=source_relative

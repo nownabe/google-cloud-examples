@@ -5,7 +5,8 @@ from pydantic import BaseModel, Field
 from google.cloud.spanner_v1.database import Database
 
 from .models import Document, Feedback
-from .document_event_publisher import DocumentEventPublisher
+from gen.docmatcher.vectorizer_pb2 import VectorizeRequest
+from gen.docmatcher.vectorizer_pb2_grpc import VectorizerServiceStub
 
 
 class CreateDocumentRequest(BaseModel):
@@ -17,7 +18,7 @@ class SearchDocumentsResponse(BaseModel):
 
 
 def create_app(spanner_db: Database,
-               document_event_publisher: DocumentEventPublisher) -> FastAPI:
+               vectorizer: VectorizerServiceStub) -> FastAPI:
     app = FastAPI()
 
     @app.post("/api/documents", response_model=Document)
@@ -31,7 +32,9 @@ def create_app(spanner_db: Database,
                 values=[(doc.id, doc.content)]
             )
 
-        document_event_publisher.publish(doc)
+        response = vectorizer.Vectorize(VectorizeRequest(content=doc.content))
+        vector = response.vector
+        print(vector)  # TODO: delete
 
         return doc
 
