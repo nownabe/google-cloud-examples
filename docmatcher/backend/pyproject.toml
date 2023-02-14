@@ -15,6 +15,7 @@ google-cloud-spanner = "^3.27.1"
 google-cloud-pubsub = "^2.14.1"
 mecab-python3 = "^1.0.6"
 gensim = "^4.3.0"
+google-cloud-storage = "^2.7.0"
 
 
 [build-system]

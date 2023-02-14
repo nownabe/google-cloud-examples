@@ -1,9 +1,9 @@
 from abc import ABCMeta, abstractmethod
 from collections.abc import Iterable
-import pickle
 
 import MeCab
 import numpy as np
+from gensim.models import KeyedVectors
 
 
 class WordExtractor(metaclass=ABCMeta):
@@ -52,9 +52,6 @@ class JapaneseWordExtractor(WordExtractor):
     )
 
     def __init__(self, ipadic_path: str):
-        if ipadic_path.startswith("gs://"):
-            pass
-
         self._mecab = MeCab.Tagger(f"-r mecabrc -d {ipadic_path} -Ochasen")
 
     def extract(self, content: str) -> Iterable[str]:
@@ -69,14 +66,9 @@ class JapaneseWordExtractor(WordExtractor):
 
 
 class Word2Vec(Vectorizer):
-    def __init__(self, word_extractor: WordExtractor, model_path: str):
-        if model_path.startswith("gs://"):
-            pass
-        elif model_path.endswith(".pkl"):
-            with open(model_path, mode="rb") as f:
-                self._model = pickle.load(f)
-
+    def __init__(self, word_extractor: WordExtractor, model: KeyedVectors):
         self._extractor = word_extractor
+        self._model = model
 
     def vectorize(self, sentence: str) -> np.ndarray:
         words = self._extractor.extract(sentence)

@@ -11,3 +11,9 @@ resource "google_pubsub_topic" "document-events" {
     encoding = "JSON"
   }
 }
+
+resource "google_storage_bucket" "models" {
+  name = "${data.google_project.project.project_id}-models"
+  location = var.region
+  storage_class = "STANDARD"
+}
