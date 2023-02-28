@@ -44,7 +44,12 @@ class SampleDataVectorizer:
             logger.info("vectorizing %s", name)
             embedding = self._vectorize(raw)
 
-            data.append({"id": name, "embedding": embedding})
+            data.append(
+                {
+                    "id": f"{self._flower}/{name}",
+                    "embedding": embedding,
+                }
+            )
 
         blob = self._dst_bucket.blob(f"{self._dst_base}/{self._flower}.json")
         with blob.open(mode="w") as f:
