@@ -115,9 +115,9 @@ resource "google_compute_global_address" "psa-alloc" {
 }
 
 resource "google_service_networking_connection" "psa" {
-  network                 = google_compute_network.matching-engine.id
+  network                 = google_compute_network.flowers-search.id
   service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.psc-alloc.name]
+  reserved_peering_ranges = [google_compute_global_address.psa-alloc.name]
 
   depends_on = [google_project_service.servicenetworking]
 }
@@ -126,7 +126,9 @@ resource "google_service_networking_connection" "psa" {
  * Compute Engine instance
  */
 
-data "google_compute_default_service_account" "default" {}
+data "google_compute_default_service_account" "default" {
+  depends_on = [google_project_service.compute]
+}
 
 resource "google_compute_instance" "query-runner" {
   name         = "query-runner"
@@ -135,7 +137,7 @@ resource "google_compute_instance" "query-runner" {
 
   boot_disk {
     initialize_params {
-      size  = "20GB"
+      size  = "20"
       type  = "pd-balanced"
       image = "debian-cloud/debian-11"
     }
@@ -204,6 +206,7 @@ resource "google_artifact_registry_repository" "updater" {
   depends_on = [google_project_service.artifactregistry]
 }
 
+// https://cloud.google.com/vertex-ai/docs/general/access-control?hl=ja
 resource "google_project_iam_member" "updater-aiplatform-user" {
   project = data.google_project.project.project_id
   role    = "roles/aiplatform.user"
