@@ -2,6 +2,20 @@
 
 このチュートリアルでは [Vertex AI Matching Engine](https://cloud.google.com/vertex-ai/docs/matching-engine/overview?hl=ja) の近似再近傍探索を利用して類似画像検索を体験します。
 
+## プロジェクトの選択
+
+ハンズオンを行う Google Cloud プロジェクトを選択して **Start** をクリックしてください。
+
+<walkthrough-project-setup />
+
+## プロジェクトの設定
+
+gcloud でプロジェクトを設定してください。
+
+```bash
+gcloud config set project "<walkthrough-project-id />"
+```
+
 ## チュートリアルの流れ
 
 1. Terraform の実行
@@ -15,18 +29,6 @@
    * 作成したインデックスを利用して、類似画像の検索クエリを実行します
 5. インデックスの更新と確認
    * インデックスに新しい画像ベクトルを追加して検索クエリを実行します
-
-## プロジェクトの選択
-
-ハンズオンを行う Google Cloud プロジェクトを選択して **Start** をクリックしてください。
-
-<walkthrough-project-setup />
-
-gcloud でプロジェクトを設定してください。
-
-```bash
-gcloud config set project "<walkthrough-project-id />"
-```
 
 ## サンプル画像データのダウンロードと確認
 
