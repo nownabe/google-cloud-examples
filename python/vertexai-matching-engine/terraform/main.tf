@@ -186,3 +186,26 @@ resource "google_compute_firewall" "allow-ssh" {
     ports    = ["22"]
   }
 }
+
+/*
+ * Updater
+ */
+
+resource "google_service_account" "updater" {
+  account_id   = "updater"
+  display_name = "Service Account for updater service"
+}
+
+resource "google_artifact_registry_repository" "updater" {
+  location      = "us-central1"
+  repository_id = "updater"
+  format        = "DOCKER"
+
+  depends_on = [google_project_service.artifactregistry]
+}
+
+resource "google_project_iam_member" "updater-aiplatform-user" {
+  project = data.google_project.project.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_service_account.updater.email}"
+}
