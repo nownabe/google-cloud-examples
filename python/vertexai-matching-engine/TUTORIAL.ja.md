@@ -32,10 +32,9 @@ gcloud config set project "<walkthrough-project-id />"
 
 ## サンプル画像データのダウンロードと確認
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="3" />
 
-このチュートリアルで使うサンプル画像データを Cloud Shell にダウンロードして確認します。
-サンプルデータは花の画像で、daisy, dandelion, roses, sunflowers, tulips の 5 つの種類の花の画像が含まれています。
+このチュートリアルで使うサンプル画像データを Cloud Shell にダウンロードして確認します。サンプルデータは花の画像で、daisy, dandelion, roses, sunflowers, tulips の 5 つの種類の花の画像が含まれています。
 
 画像用のディレクトリを作成します。
 
@@ -56,7 +55,7 @@ gsutil -m cp "gs://cloud-samples-data/ai-platform/flowers/tulips/*.jpg" ~/data/f
 画像を 1 枚確認します。
 
 ```bash
-cloudshell open daisy/100080576_f52e8ee070_n.jpg
+cloudshell open ~/data/flowers/daisy/100080576_f52e8ee070_n.jpg
 ```
 
 Cloud Shell Editor で画像が表示されます。
@@ -65,9 +64,15 @@ Cloud Shell Editor で画像が表示されます。
 
 ## Terraform の実行
 
-<walkthrough-tutorial-duration duration=5></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="5" />
 
-Terraform を実行してチュートリアルに必要なリソースを作成します。
+Terraform を実行してチュートリアルに必要なリソースを作成します。次のようなリソースが作成されます。
+
+* エンベディング保存用の Cloud Storage バケット
+* Matching Engine のインデックス エンドポイントを配置する VPC
+* クエリ実行用の Compute Engine インスタンス
+
+<walkthrough-editor-open-file filePath="./terraform/main.tf">Terraform のソースコードを確認する</walkthrough-editor-open-file>
 
 `terraform` ディレクトリに移動して Terraform を初期化します。
 
@@ -96,14 +101,13 @@ cd ..
 
 ## エンベディングの作成
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="15" />
 
-サンプル画像のエンベディングを作成して、Matching Engine のインデックス作成に必要なフォーマットで Cloud Storage にアップロードします。
-[Cloud Shell のリソース](https://cloud.google.com/shell/docs/how-cloud-shell-works?hl=ja)では処理が難しいため、Cloud Run jobs でエンベディング作成アプリ (Vectorizer) を実行します。
+サンプル画像のエンベディングを作成して、Matching Engine のインデックス作成に必要なフォーマットで Cloud Storage にアップロードします。[Cloud Shell のリソース](https://cloud.google.com/shell/docs/how-cloud-shell-works?hl=ja)では処理が難しいため、Cloud Run jobs でエンベディング作成ジョブ (Vectorizer) を実行します。
 
-(<walkthrough-editor-open-file filePath="./vectorizer/main.py">Vectorizer のソースコードを確認する</walkthrough-editor-open-file>)
+<walkthrough-editor-open-file filePath="./vectorizer/main.py">Vectorizer のソースコードを確認する</walkthrough-editor-open-file>
 
-Vectorizer の Docker イメージを [Cloud Build](https://cloud.google.com/build?hl=ja) を使ってビルドし、[Artifact Registry](https://cloud.google.com/artifact-registry?hl=ja) にプッシュします。
+Vectorizer の Docker イメージを [Cloud Build](https://cloud.google.com/build?hl=ja) を使ってビルドして [Artifact Registry](https://cloud.google.com/artifact-registry?hl=ja) にプッシュします。
 
 ```bash
 cd vectorizer
@@ -127,8 +131,7 @@ gcloud beta run jobs create \
   --execute-now
 ```
 
-[コンソール](https://console.cloud.google.com/run/jobs?project={{project-id}})で実行状況が確認できます。
-ジョブが終了したら作成されたファイルを確認します。
+[コンソール](https://console.cloud.google.com/run/jobs?project={{project-id}})で実行状況が確認できます。ジョブが終了したら作成されたファイルを確認します。
 
 ```bash
 gsutil cat gs://<walkthrough-project-id />-flowers/embeddings/flowers/daisy.json | head -1
@@ -154,16 +157,15 @@ cd ..
 
 ## インデックスの作成とデプロイ
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="60" />
 
 Matching Engine のインデックスを作成して、それをインデックス エンドポイントにデプロイします。
 
-現在、バッチ更新のインデックスは [gcloud コマンドで作成](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#create_index-gcloud)できますが、ストリーミング更新のインデックスの作成には API ライブラリや curl で [API を実行](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#create-stream)する必要があります。
-このチュートリアルではストリーミング更新のインデックスを使うため curl を使って API を実行してインデックスを作成します。
+インデックスは高速な近似再近傍探索のために必要なデータ構造を持ったデータベースです。[アルゴリズムに関する設定](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#index-metadata-file)や、探索対象となる[データ (ID とエンベディングのセット)](https://cloud.google.com/vertex-ai/docs/matching-engine/match-eng-setup#input-data-format)で構成されます。
+
+現在、バッチ更新のインデックスは [gcloud コマンドで作成](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#create_index-gcloud)できますが、ストリーミング更新のインデックスの作成には API ライブラリや curl で [API を実行](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#create-stream)する必要があります。このチュートリアルではストリーミング更新のインデックスを使うため curl を使って API を実行してインデックスを作成します。
 
 curl コマンドでインデックス作成の API を実行します。
-インデックスは高速な近似再近傍探索のために必要なデータ構造を持ったデータベースです。
-[アルゴリズムに関する設定](https://cloud.google.com/vertex-ai/docs/matching-engine/create-manage-index#index-metadata-file)や、探索対象となる[データ (ID とエンベディングのセット)](https://cloud.google.com/vertex-ai/docs/matching-engine/match-eng-setup#input-data-format)で構成されます。
 
 ```bash
 PROJECT_ID="<walkthrough-project-id />" \
@@ -175,17 +177,15 @@ PROJECT_ID="<walkthrough-project-id />" \
   -d @-
 ```
 
-インデックスの作成には数十分から1時間ほどかかります。
-[コンソール](https://console.cloud.google.com/vertex-ai/matching-engine/indexes?project={{project-id}})でステータスが確認できます。
+インデックスの作成には数十分から1時間ほどかかります。[コンソール](https://console.cloud.google.com/vertex-ai/matching-engine/indexes?project={{project-id}})でステータスが確認できます。
 
-インデックス エンドポイントを作成します。
-インデックス エンドポイントはインデックスをデプロイして、API としてクエリを実行できるようにするためのリソースです。
-インデックス エンドポイントには設定した VPC 内からのみアクセスできます。また、負荷によって自動でスケールします。
+インデックス エンドポイントを作成します。インデックス エンドポイントはインデックスによる近似再近傍探索を実行するための API を提供するためのリソースです。インデックス エンドポイントには設定した VPC 内からのみアクセスできます。また、負荷によって自動でスケールします。
 
 ```bash
+project_number=$(gcloud projects describe "<walkthrough-project-id />" --format "value(projectNumber)")
 gcloud ai index-endpoints create \
   --display-name "Endpoint for flower search" \
-  --network "projects/$(gcloud projects describe "<walkthrough-project-id />" --format "value(projectNumber)")/global/networks/flowers-search" \
+  --network "projects/${project_number}/global/networks/flowers-search" \
   --region us-central1
 ```
 
@@ -202,15 +202,13 @@ gcloud ai index-endpoints deploy-index \
   --index "$index_id"
 ```
 
-デプロイには数分かかります。表示されたコマンドを実行するか、コンソールからステータスが確認できます。
+デプロイには数分から数十分かかります。表示されたコマンドを実行するか、コンソールからステータスが確認できます。
 
 ## クエリの実行と確認
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="5" />
 
-インデックス エンドポイントに対して探索クエリを実行してサンプル画像の類似画像検索を行います。
-インデックス エンドポイントへのクエリは VPC 内からアクセスする必要があるため、 VPC 内に作成した Compute Engine インスタンスからクエリを実行します。
-インスタンスは既に Terraform で作成されています。
+インデックス エンドポイントに対して探索クエリを実行してサンプル画像の類似画像検索を行います。インデックス エンドポイントへのクエリは VPC 内からアクセスする必要があるため、 VPC 内に作成した Compute Engine インスタンスからクエリを実行します。インスタンスは既に Terraform で作成されています。
 
 検索クエリとなる画像を選択します。ここでは daisy の画像を使います。
 
@@ -221,14 +219,12 @@ image_path="daisy/100080576_f52e8ee070_n.jpg"
 検索クエリとなる画像を確認します。
 
 ```bash
-cloushell open "~/data/flowers/$image_path"
+cloudshell open ~/data/flowers/$image_path
 ```
 
-`gcloud compute ssh` コマンドを使って、インスタンス上の Python プログラムを実行して類似画像を検索します。
-このプログラムでは、Vectorizer と同じ方法で画像のエンベディングを作成して指定されたインデックス エンドポイントへのクエリを実行します。
-`Enter passphrase for key` のようなプロンプトが出た場合は SSH 鍵のパスフレーズを入力してください。
+`gcloud compute ssh` コマンドを使って、Compute Engine インスタンス上の Python プログラムを実行して類似画像を検索します。このプログラムでは、Vectorizer と同じ方法で画像のエンベディングを作成して指定されたインデックス エンドポイントへのクエリを実行します。`Enter passphrase for key` のようなプロンプトが出た場合は SSH 鍵のパスフレーズを入力してください。
 
-(<walkthrough-editor-open-file filePath="./searcher/main.py">Searcher のソースコードを確認する</walkthrough-editor-open-file>)
+<walkthrough-editor-open-file filePath="./searcher/main.py">Searcher のソースコードを確認する</walkthrough-editor-open-file>
 
 ```bash
 gcloud compute ssh query-runner \
@@ -262,10 +258,9 @@ cloudshell open ~/data/flowers/daisy/3275951182_d27921af97_n.jpg
 
 ## インデックスに含まれない画像でのクエリ
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="3" />
 
-サンプル画像のうち、tulips の画像はまだインデックスに含まれていません。
-tulips の画像で検索するとどうなるかを確認します。
+サンプル画像のうち、tulips の画像はまだインデックスに含まれていません。tulips の画像で検索するとどうなるかを確認します。
 
 tulips の画像を 1 つ選択します。
 
@@ -276,7 +271,7 @@ image_path="tulips/100930342_92e8746431_n.jpg"
 検索クエリとなる画像を確認します。
 
 ```bash
-cloushell open "~/data/flowers/$image_path"
+cloudshell open ~/data/flowers/$image_path
 ```
 
 Compute Engine インスタンス上の Python プログラムを実行して類似画像を検索します。
@@ -309,15 +304,13 @@ cloudshell open ~/data/flowers/roses/12338444334_72fcc2fc58_m.jpg
 
 ## Updater のデプロイ
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="12" />
 
-このチュートリアルではストリーミング アップデート用のインデックスを作成しました。
-[ストリーミング アップデート](https://cloud.google.com/vertex-ai/docs/matching-engine/update-rebuild-index#update_an_index_using_streaming_updates) でインデックスを更新すると、変更が数秒以内に反映されます。
+このチュートリアルではストリーミング アップデート用のインデックスを作成しました。[ストリーミング アップデート](https://cloud.google.com/vertex-ai/docs/matching-engine/update-rebuild-index#update_an_index_using_streaming_updates) でインデックスを更新すると、変更が数秒以内に反映されます。
 
-指定された画像をストリーミング アップデートを使ってインデックスに追加するための Updater サービスを Cloud Run にデプロイします。
-Updater はリクエストとして受け取ったパスの画像のエンベディングを作成して、インデックスに対して[upsert](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.indexes/upsertDatapoints)を実行します。
+このチュートリアルでは Updater を使ってインデックスをストリーミング アップデートします。Updater は新しい画像をインデックスに追加するためのサービスです。Updater はリクエストとして受け取ったパスの画像のエンベディングを作成して、インデックスに対して[upsert](https://cloud.google.com/vertex-ai/docs/reference/rest/v1/projects.locations.indexes/upsertDatapoints)を実行します。
 
-(<walkthrough-editor-open-file filePath="./updater/main.py">Updater のソースコードを確認する</walkthrough-editor-open-file>)
+<walkthrough-editor-open-file filePath="./updater/main.py">Updater のソースコードを確認する</walkthrough-editor-open-file>
 
 Updater の Docker イメージを Cloud Build を使ってビルド・プッシュします。
 
@@ -333,7 +326,7 @@ Updater を Cloud Run にデプロイします。
 gcloud run deploy \
   updater \
   --image "us-central1-docker.pkg.dev/<walkthrough-project-id />/updater/updater:v1"  \
-  --allow-unauthenticated
+  --allow-unauthenticated \
   --cpu 4 \
   --memory 2Gi \
   --region us-central1 \
@@ -349,7 +342,7 @@ cd ..
 
 ## ストリーミング アップデート
 
-<walkthrough-tutorial-duration duration=999></walkthrough-tutorial-duration>
+<walkthrough-tutorial-duration duration="5" />
 
 Updater にリクエストを送り、ストリーミング アップデートでインデックスに tulips 画像のベクトルを追加して検索結果が変わるかどうかを確認します。
 
@@ -362,10 +355,11 @@ image_path="tulips/100930342_92e8746431_n.jpg"
 Updater にこの画像のベクトルをインデックスに追加するようにリクエストします。
 
 ```bash
+url="$(gcloud run services describe updater --region us-central1 --format 'value(status.url)')"
 curl -X POST \
   -H "Content-Type: application/json" \
-  "$(gcloud run services describe updater --region us-central1 --format 'value(status.url)')/embeddings" \
-  -d '{"name":"'$image_path'"}'
+  "$url/embeddings" \
+  -d "{\"name\":\"$image_path\"}"
 ```
 
 Compute Engine インスタンス上の Python プログラムを実行して類似画像を検索します。
@@ -389,6 +383,8 @@ roses/6363951285_a802238d4e.jpg: distance=91.57391357421875
 roses/5863698305_04a4277401_n.jpg: distance=91.4017562866211
 roses/9216324117_5fa1e2bc25_n.jpg: distance=91.11756896972656
 ```
+
+このように、追加された tulips の画像が検索結果として得られるようになります。
 
 ## おつかれさまでした
 
