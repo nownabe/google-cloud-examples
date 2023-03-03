@@ -32,7 +32,7 @@ gcloud config set project "<walkthrough-project-id />"
 
 ## サンプル画像データのダウンロードと確認
 
-<walkthrough-tutorial-duration duration="3" />
+<walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
 このチュートリアルで使うサンプル画像データを Cloud Shell にダウンロードして確認します。サンプルデータは花の画像で、daisy, dandelion, roses, sunflowers, tulips の 5 つの種類の花の画像が含まれています。
 
@@ -64,7 +64,7 @@ Cloud Shell Editor で画像が表示されます。
 
 ## Terraform の実行
 
-<walkthrough-tutorial-duration duration="5" />
+<walkthrough-tutorial-duration duration="5"></walkthrough-tutorial-duration>
 
 Terraform を実行してチュートリアルに必要なリソースを作成します。次のようなリソースが作成されます。
 
@@ -101,7 +101,7 @@ cd ..
 
 ## エンベディングの作成
 
-<walkthrough-tutorial-duration duration="15" />
+<walkthrough-tutorial-duration duration="15"></walkthrough-tutorial-duration>
 
 サンプル画像のエンベディングを作成して、Matching Engine のインデックス作成に必要なフォーマットで Cloud Storage にアップロードします。[Cloud Shell のリソース](https://cloud.google.com/shell/docs/how-cloud-shell-works?hl=ja)では処理が難しいため、Cloud Run jobs でエンベディング作成ジョブ (Vectorizer) を実行します。
 
@@ -157,7 +157,7 @@ cd ..
 
 ## インデックスの作成とデプロイ
 
-<walkthrough-tutorial-duration duration="60" />
+<walkthrough-tutorial-duration duration="60"></walkthrough-tutorial-duration>
 
 Matching Engine のインデックスを作成して、それをインデックス エンドポイントにデプロイします。
 
@@ -206,7 +206,7 @@ gcloud ai index-endpoints deploy-index \
 
 ## クエリの実行と確認
 
-<walkthrough-tutorial-duration duration="5" />
+<walkthrough-tutorial-duration duration="5"></walkthrough-tutorial-duration>
 
 インデックス エンドポイントに対して探索クエリを実行してサンプル画像の類似画像検索を行います。インデックス エンドポイントへのクエリは VPC 内からアクセスする必要があるため、 VPC 内に作成した Compute Engine インスタンスからクエリを実行します。インスタンスは既に Terraform で作成されています。
 
@@ -258,7 +258,7 @@ cloudshell open ~/data/flowers/daisy/3275951182_d27921af97_n.jpg
 
 ## インデックスに含まれない画像でのクエリ
 
-<walkthrough-tutorial-duration duration="3" />
+<walkthrough-tutorial-duration duration="3"></walkthrough-tutorial-duration>
 
 サンプル画像のうち、tulips の画像はまだインデックスに含まれていません。tulips の画像で検索するとどうなるかを確認します。
 
@@ -304,7 +304,7 @@ cloudshell open ~/data/flowers/roses/12338444334_72fcc2fc58_m.jpg
 
 ## Updater のデプロイ
 
-<walkthrough-tutorial-duration duration="12" />
+<walkthrough-tutorial-duration duration="12"></walkthrough-tutorial-duration>
 
 このチュートリアルではストリーミング アップデート用のインデックスを作成しました。[ストリーミング アップデート](https://cloud.google.com/vertex-ai/docs/matching-engine/update-rebuild-index#update_an_index_using_streaming_updates) でインデックスを更新すると、変更が数秒以内に反映されます。
 
@@ -342,7 +342,7 @@ cd ..
 
 ## ストリーミング アップデート
 
-<walkthrough-tutorial-duration duration="5" />
+<walkthrough-tutorial-duration duration="5"></walkthrough-tutorial-duration>
 
 Updater にリクエストを送り、ストリーミング アップデートでインデックスに tulips 画像のベクトルを追加して検索結果が変わるかどうかを確認します。
 
