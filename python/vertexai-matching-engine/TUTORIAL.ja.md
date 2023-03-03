@@ -356,10 +356,11 @@ Updater にこの画像のベクトルをインデックスに追加するよう
 
 ```bash
 url="$(gcloud run services describe updater --region us-central1 --format 'value(status.url)')"
+body="{\"name\":\"$image_path\"}"
 curl -X POST \
   -H "Content-Type: application/json" \
   "$url/embeddings" \
-  -d "{\"name\":\"$image_path\"}"
+  -d "$body"
 ```
 
 Compute Engine インスタンス上の Python プログラムを実行して類似画像を検索します。
