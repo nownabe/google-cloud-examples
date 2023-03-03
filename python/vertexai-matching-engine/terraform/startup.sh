@@ -2,8 +2,8 @@
 
 echo 'PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION="python"' >> /etc/environment
 
-apt update
-apt -y install python3-pip git
+apt-get update
+apt-get -y install python3-pip git
 pip3 install tensorflow google-cloud-aiplatform
 
 gsutil -m cp -r gs://cloud-samples-data/ai-platform/flowers /opt/

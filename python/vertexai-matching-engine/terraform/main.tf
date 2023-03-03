@@ -146,6 +146,8 @@ resource "google_compute_instance" "query-runner" {
   network_interface {
     network    = google_compute_network.flowers-search.name
     subnetwork = google_compute_subnetwork.us-central1.name
+
+    access_config {}
   }
 
   metadata_startup_script = file("./startup.sh")
