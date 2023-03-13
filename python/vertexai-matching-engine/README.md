@@ -1,5 +1,7 @@
 # Example for Vertex AI Matching Engine
 
+**Transferred to [GoogleCloudPlatform/matching-engine-tutorial-for-image-search](https://github.com/GoogleCloudPlatform/matching-engine-tutorial-for-image-search).**
+
 ## Tutorial on Cloud Shell
 
 English:
