@@ -31,7 +31,7 @@ def list_top_tables_in_dataset(client: bigquery.Client,
 
 
 def list_top_tables(sort_by: str, project: str,
-                    top_n: int, dataset: str) -> list[str]:
+                    top_n: int, dataset: str) -> tuple[int, str]:
 
     client = bigquery.Client(project=project)
 
@@ -83,4 +83,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
