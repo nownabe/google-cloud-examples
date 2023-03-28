@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "list-bigquery-public-tables"
+version = "0.1.0"
+description = ""
+authors = ["nownabe <nownabe@users.noreply.github.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "list_bigquery_public_tables"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+google-cloud-bigquery = "^3.8.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
