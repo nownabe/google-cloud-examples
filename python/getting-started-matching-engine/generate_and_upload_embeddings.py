@@ -60,7 +60,7 @@ def generate_and_upload_embeddings(flower: str, destination_root: str) -> None:
     print(f"Finished generating and uploading embeddings for {flower} 🎉")
 
 
-if __name__ == "__main__":
+def main():
     if len(sys.argv) != 3:
         print("Usage: python generate_and_upload_embeddings.py FLOWER DESTINATION_ROOT")
         print("  FLOWER: daisy, dandelion, roses, sunflowers, or tulips")
@@ -68,3 +68,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     generate_and_upload_embeddings(sys.argv[1], sys.argv[2])
+
+
+if __name__ == "__main__":
+    main()
