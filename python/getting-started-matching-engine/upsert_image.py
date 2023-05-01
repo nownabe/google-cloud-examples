@@ -42,6 +42,8 @@ class Upserter:
 
         location = index_name.split("/")[3]
         api_endpoint = f"{location}-aiplatform.googleapis.com"
+
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1/services/index_service/client.py#L104
         self._client = IndexServiceClient(
             client_options={"api_endpoint": api_endpoint}
         )
@@ -50,14 +52,19 @@ class Upserter:
                index_name: str,
                datapoint_id: str,
                embedding: list[float]) -> None:
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1/types/index.py#L185
         datapoint = IndexDatapoint(
             datapoint_id=datapoint_id,
             feature_vector=embedding,
         )
+
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1/types/index_service.py#L252
         request = UpsertDatapointsRequest(
             index=self._index_name,
             datapoints=[datapoint]
         )
+
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1/services/index_service/client.py#L1089
         self._client.upsert_datapoints(request=request)
 
 

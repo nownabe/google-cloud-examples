@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""
-References
-
-- https://cloud.google.com/run/docs/authenticating/service-to-service?hl=ja#use_the_authentication_libraries
-- https://github.com/googleapis/python-aiplatform/blob/main/google/cloud/aiplatform_v1beta1/services/match_service/client.py
-- https://github.com/googleapis/python-aiplatform/blob/main/google/cloud/aiplatform_v1beta1/types/match_service.py
-- https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform/matching_engine/matching_engine_index_endpoint.py#L75
-"""
-
 import json
 import os
 import sys
@@ -51,22 +42,29 @@ class Matcher:
         self._index_endpoint_name = index_endpoint_name
         self._deployed_index_id = deployed_index_id
 
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1beta1/services/match_service/client.py
         self._client = vertexai.MatchServiceClient(
             client_options={"api_endpoint": self._public_endpoint()}
         )
 
     def find_neighbors(self, embedding: list[float], neighbor_count: int):
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1beta1/types/index.py#L185
         datapoint = vertexai.IndexDatapoint(
             datapoint_id="dummy-id",
             feature_vector=embedding
         )
+
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1beta1/types/match_service.py#L62
         query = vertexai.FindNeighborsRequest.Query(datapoint=datapoint)
+
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1beta1/types/match_service.py#L36
         request = vertexai.FindNeighborsRequest(
             index_endpoint=self._index_endpoint_name,
             deployed_index_id=self._deployed_index_id,
             queries=[query],
         )
 
+        # https://github.com/googleapis/python-aiplatform/blob/v1.24.1/google/cloud/aiplatform_v1beta1/services/match_service/client.py#L447
         resp = self._client.find_neighbors(request)
 
         return resp.nearest_neighbors[0].neighbors
