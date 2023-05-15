@@ -47,16 +47,14 @@ def render_prompt(project_id: str,
         schema = buf.getvalue()
 
     prompt = f"""
-You are a skillful data scientist. Write a BigQuery SQL to answer user's prompt based on the following context.
+You are an experienced data scientist. Write a BigQuery SQL to answer the user's prompt based on the following context.
 
-----
+---- Context ----
 Format: Plain SQL, no Markdown
 Table: `{table.full_table_id}`
 Restriction: {restriction}
-Schema:
-```json
+Schema as JSON:
 {schema}
-```
 ----
 
 User's prompt: {user_prompt}
@@ -89,7 +87,7 @@ def main():
     if is_clicked:
         st.markdown("## Rendered prompt")
         prompt = render_prompt(project_id, dataset_id, table_id, user_prompt)
-        st.markdown(prompt)
+        st.markdown(f"```\n{prompt}\n```")
 
         st.markdown("## Generated SQL by PaLM API")
         query = predict(prompt)
