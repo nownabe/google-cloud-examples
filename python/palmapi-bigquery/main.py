@@ -69,7 +69,7 @@ def main():
     project_id = st.text_input("Project ID", value="bigquery-public-data")
     dataset_id = st.text_input("Dataset ID", value="wikipedia")
     table_id = st.text_input("Table ID", value="pageviews_2023")
-    user_prompt = st.text_area("Prompt", value="Show top 10 popular articles in Japan in May, 2023.")
+    user_prompt = st.text_area("Prompt", value="Show top 10 popular articles in the en wiki in May, 2023.")
     is_clicked = st.button("Query")
 
     if is_clicked:
