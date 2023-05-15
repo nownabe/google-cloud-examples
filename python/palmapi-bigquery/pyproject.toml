@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "palmapi-bigquery"
+version = "0.1.0"
+description = ""
+authors = ["nownabe <nownabe@users.noreply.github.com>"]
+readme = "README.md"
+packages = [{include = "palmapi_bigquery"}]
+license = "Apache-2.0"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+google-cloud-bigquery = "^3.10.0"
+google-cloud-aiplatform = "^1.25.0"
+streamlit = "^1.22.0"
+db-dtypes = "^1.1.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
