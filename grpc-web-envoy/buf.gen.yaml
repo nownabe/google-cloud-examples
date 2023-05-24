@@ -1,0 +1,19 @@
+version: v1
+plugins:
+  - plugin: buf.build/protocolbuffers/go
+    out: go/gen
+    opt:
+      - paths=source_relative
+  - plugin: buf.build/grpc/go
+    out: go/gen
+    opt:
+      - paths=source_relative
+  - plugin: buf.build/grpc/web
+    out: web/src/gen
+    opt:
+      - mode=grpcwebtext
+      - import_style=commonjs
+  - plugin: buf.build/protocolbuffers/js
+    out: web/src/gen
+    opt:
+      - import_style=commonjs

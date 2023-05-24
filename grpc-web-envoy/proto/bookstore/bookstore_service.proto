@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package bookstore;
+
+option go_package = "github.com/nownabe/google-cloud-examples/grpc-web-envoy/go/gen/bookstore";
+
+import "google/protobuf/empty.proto";
+
+service BookstoreService {
+  rpc ListBooks(ListBooksRequest) returns (stream Book) {}
+  rpc CreateBook(CreateBookRequest) returns (Book) {}
+  rpc GetBook(GetBookRequest) returns (Book) {}
+  rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty) {}
+  rpc UpdateBook(UpdateBookRequest) returns (Book) {}
+}
+
+message Book {
+  int64 id = 1;
+  string title = 2;
+}
+
+message ListBooksRequest {
+  int64 shelf = 1;
+}
+
+message CreateBookRequest {
+  int64 shelf = 1;
+  Book book = 2;
+}
+
+message GetBookRequest {
+  int64 shelf = 1;
+  int64 book = 2;
+}
+
+message DeleteBookRequest {
+  int64 shelf = 1;
+  int64 book = 2;
+}
+
+message UpdateBookRequest {
+  int64 shelf = 1;
+  Book book = 2;
+}
