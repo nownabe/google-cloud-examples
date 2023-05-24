@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>gRPC-Web example</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css"
+    />
+  </head>
+  <body>
+    <section class="section">
+      <div class="container">
+        <h1 class="title is-1">gRPC-Web example</h1>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">Protobuf Messages</h2>
+        <div class="highlight block">
+          <pre><code>message Book {
+  int64 id = 1;
+  string title = 2;
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">ListBooks</h2>
+        <div class="highlight block">
+          <pre><code>rpc ListBooks(ListBooksRequest) returns (stream Book) {}
+
+message ListBooksRequest {
+  int64 shelf = 1;
+}</code></pre>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Request</h3>
+          <form id="list-books-form">
+            <div class="field">
+              <label class="label">Shelf ID (int64)</label>
+              <div class="control">
+                <input
+                  name="shelf"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">Call</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Response</h3>
+          <pre><code id="list-books-response"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">CreateBook</h2>
+        <div class="highlight block">
+          <pre><code>rpc CreateBook(CreateBookRequest) returns (Book) {}
+
+message CreateBookRequest {
+  int64 shelf = 1;
+  Book book = 2;
+}</code></pre>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Request</h3>
+          <form id="create-book-form">
+            <div class="field">
+              <label class="label">Shelf ID (int64)</label>
+              <div class="control">
+                <input
+                  name="shelf"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book ID (int64)</label>
+              <div class="control">
+                <input
+                  name="book.id"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book Title (string)</label>
+              <div class="control">
+                <input
+                  name="book.title"
+                  class="input"
+                  type="text"
+                  placeholder="Book Title"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">Call</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Response</h3>
+          <pre><code id="create-book-response"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">GetBook</h2>
+        <div class="highlight block">
+          <pre><code>rpc GetBook(GetBookRequest) returns (Book) {}
+
+message GetBookRequest {
+  int64 shelf = 1;
+  int64 book = 2;
+}</code></pre>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Request</h3>
+          <form id="get-book-form">
+            <div class="field">
+              <label class="label">Shelf ID (int64)</label>
+              <div class="control">
+                <input
+                  name="shelf"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book ID (int64)</label>
+              <div class="control">
+                <input
+                  name="book"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">Call</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Response</h3>
+          <pre><code id="get-book-response"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">DeleteBook</h2>
+        <div class="highlight block">
+          <pre><code>rpc DeleteBook(DeleteBookRequest) returns (google.protobuf.Empty) {}
+
+message DeleteBookRequest {
+  int64 shelf = 1;
+  int64 book = 2;
+}</code></pre>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Request</h3>
+          <form id="delete-book-form">
+            <div class="field">
+              <label class="label">Shelf ID (int64)</label>
+              <div class="control">
+                <input
+                  name="shelf"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book ID (int64)</label>
+              <div class="control">
+                <input
+                  name="book"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">Call</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Response</h3>
+          <pre><code id="delete-book-response"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2 class="title is-2">UpdateBook</h2>
+        <div class="highlight block">
+          <pre><code>rpc UpdateBook(UpdateBookRequest) returns (Book) {}
+
+message UpdateBookRequest {
+  int64 shelf = 1;
+  Book book = 2;
+}</code></pre>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Request</h3>
+          <form id="update-book-form">
+            <div class="field">
+              <label class="label">Shelf ID (int64)</label>
+              <div class="control">
+                <input
+                  name="shelf"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book ID (int64)</label>
+              <div class="control">
+                <input
+                  name="book.id"
+                  class="input"
+                  type="number"
+                  placeholder="1"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Book Title (string)</label>
+              <div class="control">
+                <input
+                  name="book.title"
+                  class="input"
+                  type="text"
+                  placeholder="Book Title"
+                />
+              </div>
+            </div>
+            <div class="field">
+              <div class="control">
+                <button class="button is-link">Call</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="block">
+          <h3 class="title is-3">Response</h3>
+          <pre><code id="update-book-response"></code></pre>
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="client.js"></script>
+  </body>
+</html>
