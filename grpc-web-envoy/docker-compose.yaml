@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  grpc:
+    build: ./go
+    ports:
+      - "50051:50051"
+  envoy:
+    build:
+      context: ./envoy
+      dockerfile: Dockerfile.compose
+    ports:
+      - "8080:8080"
