@@ -1,0 +1,38 @@
+# See the reference
+# https://cloud.google.com/run/docs/reference/yaml/v1
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: grpc-web
+  labels:
+    cloud.googleapis.com/location: us-central1
+  annotations:
+    run.googleapis.com/launch-stage: BETA
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "1"
+        run.googleapis.com/execution-environment: gen1
+    spec:
+      serviceAccountName: ${SERVICE_ACCOUNT}
+      containers:
+        - image: ${ENVOY_IMAGE}
+          name: envoy
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: ".08"
+              memory: 128Mi
+        - image: ${GRPC_IMAGE}
+          name: grpc
+          resources:
+            limits:
+              cpu: ".08"
+              memory: 128Mi
+          livenessProbe:
+            grpc:
+              port: 50051
+              service: bookstore.BookstoreService

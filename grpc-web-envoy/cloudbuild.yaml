@@ -1,0 +1,40 @@
+steps:
+  - id: build-envoy
+    waitFor: ["-"]
+    name: gcr.io/cloud-builders/docker
+    dir: envoy
+    args: [build, -t, us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/envoy:v1, .]
+  - id: push-envoy
+    waitFor: [build-envoy]
+    name: gcr.io/cloud-builders/docker
+    args: [push, us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/envoy:v1]
+
+  - id: build-grpc
+    waitFor: ["-"]
+    name: gcr.io/cloud-builders/docker
+    dir: go
+    args: [build, -t, us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/grpc:v1, .]
+  - id: push-grpc
+    waitFor: [build-grpc]
+    name: gcr.io/cloud-builders/docker
+    args: [push, us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/grpc:v1]
+
+  - id: render-service-yaml
+    waitFor: ["-"]
+    name: debian:bookworm-slim
+    entrypoint: bash
+    env:
+      - SERVICE_ACCOUNT=grpc-web@$PROJECT_ID.iam.gserviceaccount.com
+      - ENVOY_IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/envoy:v1
+      - GRPC_IMAGE=us-central1-docker.pkg.dev/$PROJECT_ID/grpc-web/grpc:v1
+    args: # substitute environment variables like envsubst
+      - -c
+      - |-
+        eval "cat <<EOF
+          $(cat service.template.yaml)
+        EOF" > service.yaml
+        cat service.yaml
+
+  - waitFor: [push-envoy, push-grpc, render-service-yaml]
+    name: gcr.io/cloud-builders/gcloud
+    args: [run, services, replace, service.yaml]

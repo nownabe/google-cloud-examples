@@ -1,0 +1,6 @@
+proto/
+web/
+.gcloudignore
+buf.gen.yaml
+docker-compose.yaml
+README.md
