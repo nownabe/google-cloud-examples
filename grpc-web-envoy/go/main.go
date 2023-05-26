@@ -10,6 +10,8 @@ import (
 	pb "github.com/nownabe/google-cloud-examples/grpc-web-envoy/go/gen/bookstore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -148,6 +150,10 @@ func main() {
 		shelves: make(map[int64]*shelf),
 	}
 	pb.RegisterBookstoreServiceServer(s, svc)
+
+	healthSvc := health.NewServer()
+	healthpb.RegisterHealthServer(s, healthSvc)
+	healthSvc.SetServingStatus("bookstore.BookstoreService", healthpb.HealthCheckResponse_SERVING)
 
 	reflection.Register(s)
 
