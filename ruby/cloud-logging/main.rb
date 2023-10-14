@@ -60,10 +60,11 @@ get "/message" do
   emit(log)
 end
 
-get "/severity" do
+get "/severity/:severity" do
+  severity = params["severity"] || "INFO"
   log = {
-    message: "Hello, Cloud Logging!",
-    severity: "ERROR",
+    message: "Hello, Cloud Logging! severity=#{severity}",
+    severity: severity,
     key1: "value1",
   }
   emit(log)
