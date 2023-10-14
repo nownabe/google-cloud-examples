@@ -71,10 +71,11 @@ get "/severity/:severity" do
 end
 
 get "/time" do
+  t = Time.now + 30 * 60 # 30 minutes later
   log = {
     message: "Hello, Cloud Logging! with time",
     severity: "INFO",
-    time: Time.now.utc.iso8601(9), # nano seconds
+    time: Time.new(t.year, t.month, t.day, t.hour, t.min, t.sec).utc.iso8601(9), # nano seconds
     key1: "value1",
   }
   emit(log)
