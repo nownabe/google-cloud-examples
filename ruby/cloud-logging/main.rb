@@ -81,8 +81,12 @@ get "/time" do
   emit(log)
 end
 
+def some_func
+  Thread.current.backtrace[1].split(":")
+end
+
 get "/source_location" do
-  file, line, function = Thread.current.backtrace[0].split(":")
+  file, line, function = some_func
   log = {
     message: "Hello, Cloud Logging! with sourceLocation",
     severity: "INFO",
@@ -109,13 +113,13 @@ get "/trace" do
   emit(log)
 end
 
-def some_func
+def some_error_func
   raise "some error"
 end
 
 get "/stack_trace" do
   begin
-    some_func
+    some_error_func
   rescue => e
     log = {
       message: e.message,
