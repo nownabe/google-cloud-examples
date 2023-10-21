@@ -118,14 +118,16 @@ def some_error_func
 end
 
 get "/stack_trace" do
+  severity = params["severity"] || "ERROR"
   begin
     some_error_func
   rescue => e
+    msg = "#{e.class}: #{e.message} (#{severity})"
     log = {
-      message: e.message,
-      severity: "ERROR",
+      message: msg,
+      severity: severity,
       key1: "value1",
-      stack_trace: e.message + "\n" + e.backtrace.join("\n"),
+      stack_trace: msg + "\n" + e.backtrace.join("\n"),
     }
     emit(log)
   end
