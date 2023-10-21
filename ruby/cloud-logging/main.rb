@@ -148,18 +148,6 @@ get "/labels" do
   emit(log)
 end
 
-# Optional
-
-get "/insert_id" do
-  log = {
-    message: "Hello, Cloud Logging! with insertId",
-    severity: "INFO",
-    key1: "value1",
-    "logging.googleapis.com/insertId": SecureRandom.uuid,
-  }
-  emit(log)
-end
-
 get "/http_request" do
   log = {
     message: "Hello, Cloud Logging! with httpRequest",
@@ -182,6 +170,18 @@ get "/http_request" do
       cacheFillBytes: "0",
       protocol: "HTTP/1.1",
     },
+  }
+  emit(log)
+end
+
+# Optional
+
+get "/insert_id" do
+  log = {
+    message: "Hello, Cloud Logging! with insertId",
+    severity: "INFO",
+    key1: "value1",
+    "logging.googleapis.com/insertId": SecureRandom.uuid,
   }
   emit(log)
 end
