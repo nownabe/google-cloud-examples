@@ -6,10 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"cloud.google.com/go/compute/metadata"
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	"go.nownabe.dev/clog"
+	"go.nownabe.dev/clog/errors"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
@@ -21,26 +22,21 @@ import (
 
 var projectID string
 
-func logSpan(spanCtx trace.SpanContext, prefix string) {
-	b := strings.Builder{}
-	fmt.Fprint(&b, `{`)
-	fmt.Fprint(&b, `"severity":"INFO",`)
-	fmt.Fprintf(&b, `"message":"[%s] IsValid=%t, TraceID=%s, SpanID=%s, IsSampled=%t",`, prefix, spanCtx.IsValid(), spanCtx.TraceID(), spanCtx.SpanID(), spanCtx.IsSampled())
-	fmt.Fprintf(&b, `"logging.googleapis.com/trace":"projects/%s/traces/%s",`, projectID, spanCtx.TraceID())
-	fmt.Fprintf(&b, `"logging.googleapis.com/spanId":"%s",`, spanCtx.SpanID())
-	fmt.Fprintf(&b, `"logging.googleapis.com/trace_sampled":%t`, spanCtx.IsSampled())
-	fmt.Fprintf(&b, `}`)
-	fmt.Fprintf(&b, "\n")
-	fmt.Print(b.String())
+func logSpan(ctx context.Context, prefix string) {
+	spanCtx := trace.SpanContextFromContext(ctx)
+	clog.Infof(ctx, "[%s] IsValid=%t, TraceID=%s, SpanID=%s, IsSampled=%t", prefix, spanCtx.IsValid(), spanCtx.TraceID(), spanCtx.SpanID(), spanCtx.IsSampled())
 }
 
 func main() {
-	var err error
+	ctx := context.Background()
 
-	projectID, err = metadata.ProjectID()
+	projectID, err := metadata.ProjectID()
 	if err != nil {
 		log.Printf("metadata.ProjectID failed: %v", err)
 	}
+
+	logger := clog.New(os.Stdout, clog.SeverityInfo, true, clog.WithTrace(projectID))
+	clog.SetDefault(logger)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -48,7 +44,7 @@ func main() {
 	}
 
 	if err := setTrace(projectID); err != nil {
-		log.Printf("setTrace failed: %v", err)
+		clog.Err(ctx, errors.Errorf("setTrace failed: %w", err))
 	}
 
 	propagator := otel.GetTextMapPropagator()
