@@ -13,6 +13,7 @@ import (
 	"go.nownabe.dev/clog/errors"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -61,6 +62,20 @@ func main() {
 		ctx, span := tracer.Start(ctx, fmt.Sprintf("%s %s %s", r.Method, r.URL.Path, r.Proto))
 		defer span.End()
 		logSpan(ctx, "app2:2")
+
+		span.AddEvent("app2 event") // event can be seen on Trace explorer
+
+		err := errors.New("app2 error")
+		clog.Err(ctx, err)
+		span.SetStatus(codes.Error, err.Error()) // No effect
+
+		/*
+			"exception" can be seen on Trace explorer
+			with "app2 error" in 'exception.message', "*errors.WithStack" in 'exception.type',
+			and stacktrace in 'exception.stacktrace' but stactrace is less meaningful.
+			https://github.com/open-telemetry/opentelemetry-go/blob/main/sdk/trace/span.go#L432
+		*/
+		span.RecordError(err, trace.WithStackTrace(true))
 
 		w.WriteHeader(http.StatusOK)
 	}
