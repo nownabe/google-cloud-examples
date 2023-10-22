@@ -60,9 +60,7 @@ func main() {
 	callApp2 := func(ctx context.Context) error {
 		ctx, span := tracer.Start(ctx, "callApp2")
 		defer span.End()
-
-		spanCtx := span.SpanContext()
-		logSpan(spanCtx, "app1:3")
+		logSpan(ctx, "app1:3")
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, app2URL, nil)
 		if err != nil {
@@ -85,13 +83,11 @@ func main() {
 		fmt.Printf("[app1] X-Cloud-Trace-Context=%q\n", r.Header.Get("X-Cloud-Trace-Context"))
 
 		ctx = propagator.Extract(ctx, propagation.HeaderCarrier(r.Header))
-		spanCtx := trace.SpanContextFromContext(ctx)
-		logSpan(spanCtx, "app1:1")
+		logSpan(ctx, "app1:1")
 
 		ctx, span := tracer.Start(ctx, fmt.Sprintf("%s %s %s", r.Method, r.URL.Path, r.Proto))
 		defer span.End()
-		spanCtx = span.SpanContext()
-		logSpan(spanCtx, "app1:2")
+		logSpan(ctx, "app1:2")
 
 		callApp2(ctx)
 

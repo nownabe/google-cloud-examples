@@ -56,13 +56,11 @@ func main() {
 		fmt.Printf("[app2] X-Cloud-Trace-Context=%q\n", r.Header.Get("X-Cloud-Trace-Context"))
 
 		ctx = propagator.Extract(ctx, propagation.HeaderCarrier(r.Header))
-		spanCtx := trace.SpanContextFromContext(ctx)
-		logSpan(spanCtx, "app2:1")
+		logSpan(ctx, "app2:1")
 
 		ctx, span := tracer.Start(ctx, fmt.Sprintf("%s %s %s", r.Method, r.URL.Path, r.Proto))
 		defer span.End()
-		spanCtx = span.SpanContext()
-		logSpan(spanCtx, "app2:2")
+		logSpan(ctx, "app2:2")
 
 		w.WriteHeader(http.StatusOK)
 	}
