@@ -22,8 +22,8 @@ from vertexai.preview.language_models import TextGenerationModel
 
 MODEL_NAME = "text-bison@001"
 TEMPERATURE = 0.2
-TOP_K = 0.8
-TOP_P = 40
+TOP_K = 40
+TOP_P = 0.8
 
 
 client = bigquery.Client()
