@@ -11,6 +11,8 @@ RUN go build -a -trimpath -o /go/bin/app .
 
 #---- runtime
 FROM gcr.io/distroless/static-debian12:nonroot
+ARG app_version=v0.0.0
+ENV APP_VERSION=$app_version
 
 COPY --from=builder /go/bin/app /app
 
