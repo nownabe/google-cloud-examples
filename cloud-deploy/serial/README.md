@@ -2,6 +2,14 @@
 
 https://console.cloud.google.com/billing
 
+## Terraform apply
+
+```shell
+cd terraform
+terraform init
+terraform apply
+```
+
 ## Configure your project
 
 ```shell
