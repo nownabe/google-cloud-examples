@@ -1,4 +1,4 @@
-# Serial Delivery Pipeline
+# Multi-regional Pipeline
 
 ![diagram](./diagram.png)
 
