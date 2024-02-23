@@ -1,6 +1,6 @@
 # Serial Delivery Pipeline
 
-![overview](./overview.png)
+![diagram](./diagram.png)
 
 ## Terraform apply
 

@@ -1,6 +1,6 @@
 # Serial Delivery Pipeline
 
-https://console.cloud.google.com/billing
+![diagram](./diagram.png)
 
 ## Terraform apply
 
