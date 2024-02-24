@@ -54,12 +54,13 @@ Create a new release and deploy the image to dev.
 
 ```shell
 cd deploy
-gcloud deploy releases create "r-1-0-0" \
+gcloud deploy releases create v-1-0-0 \
   --region "${REGION}" \
   --delivery-pipeline hello-app \
   --gcs-source-staging-dir "gs://${PROJECT_PREFIX}-pipeline/hello-app/source" \
   --build-artifacts artifacts.json \
   --skaffold-file skaffold.yaml \
+  --source . \
   --enable-initial-rollout \
   --impersonate-service-account "${DEPLOYER_SA}"
 ```
@@ -68,7 +69,7 @@ gcloud deploy releases create "r-1-0-0" \
 
 ```shell
 gcloud deploy releases promote \
-  --release "r-1-0-0" \
+  --release v-1-0-0 \
   --delivery-pipeline hello-app \
   --region us-central1 \
   --impersonate-service-account "${STG_PROMOTER_SA}"
@@ -78,7 +79,7 @@ gcloud deploy releases promote \
 
 ```shell
 gcloud deploy releases promote \
-  --release "r-1-0-0" \
+  --release v-1-0-0 \
   --delivery-pipeline hello-app \
   --region us-central1 \
   --impersonate-service-account "${PRD_PROMOTER_SA}"
