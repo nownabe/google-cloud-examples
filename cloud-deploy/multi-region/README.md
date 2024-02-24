@@ -44,6 +44,7 @@ cd deploy
 export APP_VERSION=v1.0.0
 gcloud config set auth/impersonate_service_account "${DEPLOYER_SA}"
 skaffold build \
+  --filename skaffold.yaml \
   --default-repo "${REGION}-docker.pkg.dev/${PROJECT_PREFIX}-pipeline/hello-app" \
   --file-output artifacts.json
 gcloud config unset auth/impersonate_service_account
