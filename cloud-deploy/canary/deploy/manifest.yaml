@@ -1,0 +1,17 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: hello-app
+  annotations:
+    run.googleapis.com/ingress: all
+spec:
+  template:
+    spec:
+      serviceAccountName: dummy # from-param: ${service_account_name}
+      containers:
+        - name: hello-app
+          image: hello-app
+          env:
+            - name: MESSAGE
+              value: dummy # from-param: ${message}
+

@@ -1,0 +1,32 @@
+apiVersion: skaffold/v3
+kind: Config
+metadata:
+  name: hello-app
+build:
+  tagPolicy:
+    envTemplate:
+      template: "{{ .APP_VERSION }}"
+  artifacts:
+    - image: hello-app
+      context: ../../app
+      docker:
+        buildArgs:
+          app_version: "{{ .APP_VERSION }}"
+        dockerfile: ../../app/Dockerfile
+  local:
+    useBuildkit: true
+    push: true
+deploy:
+  cloudrun: {}
+manifests:
+  rawYaml:
+    - manifest.yaml
+verify:
+  - name: verify
+    container:
+      name: verify
+      image: alpine
+      command: ["/bin/sh"]
+      args: ["-c", "wget ${CLOUD_RUN_SERVICE_URLS}"]
+      # https://skaffold.dev/docs/verify/
+      # https://cloud.google.com/deploy/docs/verify-deployment#available_environment_variables
