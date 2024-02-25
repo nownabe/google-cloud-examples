@@ -20,4 +20,4 @@ deploy:
   cloudrun: {}
 manifests:
   rawYaml:
-    - hello-app.yaml
+    - manifest.yaml
