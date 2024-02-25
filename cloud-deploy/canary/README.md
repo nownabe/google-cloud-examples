@@ -8,6 +8,7 @@
 cd terraform
 terraform init
 terraform apply
+cd ..
 ```
 
 ## Configure your project

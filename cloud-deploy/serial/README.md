@@ -8,6 +8,7 @@
 cd terraform
 terraform init
 terraform apply
+cd ..
 ```
 
 ## Configure your project
@@ -53,7 +54,6 @@ gcloud config unset auth/impersonate_service_account
 Create a new release and deploy the image to dev.
 
 ```shell
-cd deploy
 gcloud deploy releases create v-1-0-0 \
   --region "${REGION}" \
   --delivery-pipeline hello-app \
