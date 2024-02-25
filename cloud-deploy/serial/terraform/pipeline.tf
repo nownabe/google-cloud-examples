@@ -15,46 +15,46 @@ resource "google_project_service" "clouddeploy" {
   service = "clouddeploy.googleapis.com"
 }
 
-//-------- hello-app-deployer Service Account --------//
+//-------- hello-app-releaser Service Account --------//
 
 # Service Account for creating Cloud Deploy Release.
 # In other words, this Service Account will be used to trigger a delivery pipeline.
-resource "google_service_account" "hello-app-deployer" {
+resource "google_service_account" "hello-app-releaser" {
   project      = google_project.pipeline.project_id
-  account_id   = "hello-app-deployer"
-  display_name = "hello-app-deployer"
+  account_id   = "hello-app-releaser"
+  display_name = "hello-app-releaser"
   description  = "Service Account for creating Cloud Deploy Releases"
 }
 
-# hello-app-deployer Service Account needs permissions to upload artifacts.json to the bucket.
-resource "google_storage_bucket_iam_member" "hello-app-deployer_objectCreator" {
+# hello-app-releaser Service Account needs permissions to upload artifacts.json to the bucket.
+resource "google_storage_bucket_iam_member" "hello-app-releaser_objectCreator" {
   bucket = google_storage_bucket.storage.name
   role   = "roles/storage.objectCreator"
-  member = "serviceAccount:${google_service_account.hello-app-deployer.email}"
+  member = "serviceAccount:${google_service_account.hello-app-releaser.email}"
 }
 
-resource "google_storage_bucket_iam_member" "hello-app-deployer_legacyBucketsReader" {
+resource "google_storage_bucket_iam_member" "hello-app-releaser_legacyBucketsReader" {
   bucket = google_storage_bucket.storage.name
   role   = "roles/storage.legacyBucketReader"
-  member = "serviceAccount:${google_service_account.hello-app-deployer.email}"
+  member = "serviceAccount:${google_service_account.hello-app-releaser.email}"
 }
 
-# hello-app-deployer Service Account needs permissions to push images to Artifact Registry.
-resource "google_artifact_registry_repository_iam_member" "hello-app-deployer" {
+# hello-app-releaser Service Account needs permissions to push images to Artifact Registry.
+resource "google_artifact_registry_repository_iam_member" "hello-app-releaser" {
   project    = google_artifact_registry_repository.hello-app.project
   location   = google_artifact_registry_repository.hello-app.location
   repository = google_artifact_registry_repository.hello-app.name
   role       = "roles/artifactregistry.writer"
-  member     = "serviceAccount:${google_service_account.hello-app-deployer.email}"
+  member     = "serviceAccount:${google_service_account.hello-app-releaser.email}"
 }
 
-# hello-app-deployer Service Account needs permissions to act as the Service Account for the Cloud Deploy Target.
-resource "google_service_account_iam_member" "deployer-as-hello-app-target" {
+# hello-app-releaser Service Account needs permissions to act as the Service Account for the Cloud Deploy Target.
+resource "google_service_account_iam_member" "releaser-as-hello-app-target" {
   for_each = local.projects
 
   service_account_id = google_service_account.hello-app-target[each.key].name
   role               = "roles/iam.serviceAccountUser"
-  member             = "serviceAccount:${google_service_account.hello-app-deployer.email}"
+  member             = "serviceAccount:${google_service_account.hello-app-releaser.email}"
 }
 
 // -------- hello-app-stg-promoter Service Account -------- //
@@ -243,12 +243,12 @@ resource "google_project_iam_custom_role" "clouddeploy_releaser" {
 data "google_iam_policy" "hello-app" {
   binding {
     role    = google_project_iam_custom_role.clouddeploy_releaser.id
-    members = ["serviceAccount:${google_service_account.hello-app-deployer.email}"]
+    members = ["serviceAccount:${google_service_account.hello-app-releaser.email}"]
   }
 
   binding {
     role    = "roles/clouddeploy.releaser"
-    members = ["serviceAccount:${google_service_account.hello-app-deployer.email}"]
+    members = ["serviceAccount:${google_service_account.hello-app-releaser.email}"]
     condition {
       title      = "Rollout to hello-app-dev"
       expression = "api.getAttribute(\"clouddeploy.googleapis.com/rolloutTarget\", \"\") == \"${google_clouddeploy_target.hello-app["dev"].name}\""
@@ -285,13 +285,13 @@ resource "google_clouddeploy_delivery_pipeline_iam_policy" "policy" {
 
 locals {
   rollout_creators = {
-    deployer     = "serviceAccount:${google_service_account.hello-app-deployer.email}",
+    releaser     = "serviceAccount:${google_service_account.hello-app-releaser.email}",
     stg_promoter = "serviceAccount:${google_service_account.hello-app-stg-promoter.email}",
     prd_promoter = "serviceAccount:${google_service_account.hello-app-prd-promoter.email}",
   }
 }
 
-resource "google_project_iam_member" "hello-app-deployer_clouddeploy_viewer" {
+resource "google_project_iam_member" "hello-app-releaser_clouddeploy_viewer" {
   for_each = local.rollout_creators
 
   project = google_project.pipeline.project_id

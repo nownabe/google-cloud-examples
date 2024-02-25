@@ -15,7 +15,7 @@ terraform apply
 ```shell
 PROJECT_PREFIX="your-project-prefix"
 REGION="us-central1"
-DEPLOYER_SA="hello-app-deployer@${PROJECT_PREFIX}-pipeline.iam.gserviceaccount.com"
+RELEASER_SA="hello-app-releaser@${PROJECT_PREFIX}-pipeline.iam.gserviceaccount.com"
 STG_PROMOTER_SA="hello-app-stg-promoter@${PROJECT_PREFIX}-pipeline.iam.gserviceaccount.com"
 PRD_PROMOTER_SA="hello-app-prd-promoter@${PROJECT_PREFIX}-pipeline.iam.gserviceaccount.com"
 gcloud config set project "${PROJECT_PREFIX}-pipeline"
@@ -24,7 +24,7 @@ gcloud config set project "${PROJECT_PREFIX}-pipeline"
 Allow you to impersonate service accounts.
 
 ```shell
-gcloud iam service-accounts add-iam-policy-binding "${DEPLOYER_SA}" \
+gcloud iam service-accounts add-iam-policy-binding "${RELEASER_SA}" \
   --member "user:$(gcloud config get account)" \
   --role roles/iam.serviceAccountTokenCreator
 gcloud iam service-accounts add-iam-policy-binding "${STG_PROMOTER_SA}" \
@@ -42,7 +42,7 @@ Build and push a new docker image.
 ```shell
 cd deploy
 export APP_VERSION=v1.0.0
-gcloud config set auth/impersonate_service_account "${DEPLOYER_SA}"
+gcloud config set auth/impersonate_service_account "${RELEASER_SA}"
 skaffold build \
   --filename skaffold.yaml \
   --default-repo "${REGION}-docker.pkg.dev/${PROJECT_PREFIX}-pipeline/hello-app" \
@@ -62,7 +62,7 @@ gcloud deploy releases create v-1-0-0 \
   --skaffold-file skaffold.yaml \
   --source . \
   --enable-initial-rollout \
-  --impersonate-service-account "${DEPLOYER_SA}"
+  --impersonate-service-account "${RELEASER_SA}"
 ```
 
 ## Promote to stg
